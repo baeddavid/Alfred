@@ -129,7 +129,7 @@ def main(params):
     while interjection >= 0:
         ## Iterate through the array of symptoms once
         while pointer < len(symptoms):
-            ## If the symptom value is not none and interjection is greater than one, insert a comma and remove that symptom from the dictinoary
+            ## If the symptom value is not none and interjection is greater than one, insert a comma and remove that symptom from the dictionary
             if symptoms[pointer] != 'None' and interjection > 1:
                 symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
@@ -137,11 +137,11 @@ def main(params):
             elif symptoms[pointer] != 'None' and interjection == 1:
                 symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]} and '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
-            ## If the symptom is not none and interjefction is 0 we simply insert the symptom into the string and remove that symptom from the dictinary
+            ## If the symptom is not none and interjection is 0 we simply insert the symptom into the string and remove that symptom from the dictinary
             elif symptoms[pointer] != 'None':
                 symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}.'
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
-            ## For every iteartion through the list, increment the pointer by one and decrement the interjection by one
+            ## For every iteration through the list, increment the pointer by one and decrement the interjection by one
             interjection -= 1
             pointer += 1
 
@@ -150,19 +150,26 @@ def main(params):
     symptom_names = {'palpitation' : palpitation, 'dizziness': dizziness_level, 'shortness of breathe': shortness_breathe_level, 'fatigue': fatigue_level}
     symptom_denial_list = ''
 
+    ## Loop until we have used all negative interjections
     while interjection_negative >= 0:
+        ## Iterate through the array of symptoms once
         while pointer < len(symptoms):
+            ## If we have not intialized a starting string, initialize it
             if pointer == 0:
                 symptom_denial_list = f'{patient_name} denies any symptoms of '
+            ## If the symptom value is not none and negative interjection is greater than one, insert a comma and remove that symptom from dictionary
             elif symptoms[pointer] == 'None' and interjection_negative > 1:
                 symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+            ## If the symptom is not none and interjection is 1 we simply insert the symptom into the string and remove that symptom from the dictionary
             elif symptoms[pointer] == 'None' and interjection_negative == 1:
                 symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, and'
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+            ## If the symptom is not none and interjection is 0 we simply insert the symptom into the string and remove that symptom from the dictionary
             elif symptoms[pointer] == 'None':
                 symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}. '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+            ## For every iteration through the list, increment the pointer by one and decrement the interjection by one.
             interjection_negative -= 1
             pointer += 1
 
