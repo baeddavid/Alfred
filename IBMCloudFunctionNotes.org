@@ -1,0 +1,7 @@
+#+TITLE: Ibm Cloud Function Notes
+* Functions and Params
+So it seems that params are just empty objects that we can initialize with input. Params is a bit misleading as it makes you think that it has a certain structure to it but it simply doesn't.
+
+It's an empty object that we initialize to either push or retrieve data from db2.
+
+{}

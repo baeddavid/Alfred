@@ -1,0 +1,59 @@
+#+TITLE: Patient Generation
+* Patient Generation example
+"Eric is a 75-year-old man who was diagnosed with atrial fibrillation in September of last year (or some other form such as 2 years ago, closer to how the user describes it).  This was diagnosed at the doctor's office (or some other places, we need some way to make the free text fits the body of the history).  He was quite symptomatic with palpitation and dizziness.  A 12 lead EKG in September demonstrated atrial fibrillation.  In hindsight, he has had symptoms for about 2 years.  He has not required cardioversion.  His atrial fibrillation is paroxysmal, occurring one every 2 months or so, generally lasting about 5 hours.  His last episode was 3 weeks ago.  During atrial fibrillation, his quality of life is generally poor with shortness of breath, palpitation, and poor energy.  He was started on Eliquis and Toprol.  He feels that the medication helps somewhat.
+
+As for his past medical history, he has a history of myocardial infarction and coronary bypass surgery.  He has hypertension and diabetes.  He denies congestive heart failure, stroke, or thromboembolism, or peripheral vascular disease."
+
+* Rules
+1) Nick name, to address patient, also first sentence of the history:  "John is a 57-year-old man.."
+3) When diagnosis was made, "who was diagnosed with AF 3 months ago..."
+4) Where diagnosis was made, " at the hospital."
+5) If not any of the variable in 4) this will fill in where it was diagnoses, such as "at home" or at the office," etc , where was input
+6) If answer was symptom, then "when he presented with 7)."  If the answer was something else, then "when he presented with 8)
+7) see 6)
+8) see 6)
+10) 11) 12) 13) Symptoms include mild/moderate/severe palp/SOB/fatigue/dizziness.  He denies symptom of (whichever was none)
+14) In addition, he (or she based on later variable) also complains of 14)
+15) If yes: In hindsight, he experience symptoms (whenever is stated in 16),  If no, he has no similar symptom in the past.
+16) See 15
+17) He thinks that AF negatively, or doesn't affect his QOL, or he's not sure that AF affects his QOL.
+18) During AF, his QOL is
+19) Any elaboration may be added to history
+"His AF was captured by"
+21)  a 12 lead EKG (if yes) when 22)
+22) See 21
+23) Holter? Event? Patch, and 24) type, duration, approximate time returned
+24) see 23
+25) Smart device, and 26) type
+28) he has not required cardioversion (if no).  He has undergone 29) cardioversions with the last one in 30)
+29) see 28
+30) see 28
+31) cardioversion is successful/not successful, if not successful, he stated in normal rhythm for 32) after cardioversion.
+33) If yes, he was prescribed: 34)  If no, he was not prescribed new medications
+34) see 33
+35) He thinks the medication is/not working because 36)
+His heart rate may/may not be controlled during AFib (based on either/or + response to 39)
+39) At rest, he thinks that his heart rate was >/< 100 bpm.
+40) He thinks that, during activities, his HR was/was not excessively high.
+    41) he thinks that he is in AF all the time since 42)
+Or
+41) he thinks that he goes in and out of AF with the last episode  43)  episodes occurred 44) and lasting on average 45)
+New paragraph:
+Cardiac history includes:
+CAD if any of 48, 49, 50, 51 (+) with myocardial infarction (48), angina (49), CABG (50), PCI (51).
+Valve disease(52) involving (53) or (54)  David, is there a way to choose more than 1 choice?
+Valve lesions appear to be 55)
+56) he underwent 57) repair/replacement/both repair and replacemen/or surgery (if not sure) of 58)  For some reason I'm not able to add "more than 1 valve" as a choice here. please check and troubleshoot.
+59) He take 60) for his valve.
+CHF if 61) is +
+New paragraph:
+His risk factors for stroke include:
+hypertension (63), age  (64, need calculator:  ChADSVASC 1 if 65 but < 75, 2 if 75 or older), female (if 65), diabetes (66), strok (67, chadsvasc 2), thromboembolism (68 but count under stroke, that means someone with stroke and blood clot still only counts as 2), vascular disease (if any of 70,71, 72, or 73)  He had 70,71,72,73.
+In addition 64) will go to the first sentence of our history about the age and 65) will go to the entire history regarding the pronoun.
+
+New paragraph:
+In terms of lifestyle,
+His BMI is (calculated based on 75 and 76)
+77) he smokes 77) or he doesn't smoke if 0ppd
+78) he drinks 78) 79) or he doesn't drink
+79) he has sleep apnea and uses/doesn not use (81) CPAP, OR he doesn't have sleep apnea.

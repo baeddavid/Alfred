@@ -1,0 +1,19 @@
+#+TITLE: Notes
+*** IBM Watson
+There seems to be two versions for some reason. Old version + new version
+Is Watson discover/neural link worth it?
+Something funny is going on in the old version after he tinkered around with it.
+
+**** Watson discovery
+**** Alfred TODO
+1. Download a backup of all actions from Dallas and DC
+2. Check to see if the preview issue is user specific or general
+3. See if 2 can be fixed
+4. See if the backup you created can be uploaded without replacing existing actions
+5. Contact IBM Support (maybe)
+
+
+1. Watson Assistant Versioning
+2. Watson Assistant Arithmetic
+3. Intentions and Entities
+4. IBM Text to speech

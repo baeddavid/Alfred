@@ -1,0 +1,13 @@
+#+TITLE: Fhir H L7
+* Overview
+HL7 FHIR is a standard for exchaning healthcare information electronically. It is a moden, web-based stanard developed by Health Level Seven International(HL7) an organization that develops standards
+for health care exchange.
+
+FHIR is designed to facilitate interoperability and exchange of healthcare data between different healthcare systems, devices, and applications. It uses a modular appraoch and leverages modern web technologies
+such as RESTful APIs and JSON for data representation.
+
+The key goals of HL7 FHIR include:
+ 1. Interoperability: FHIR aims to enable seamless data exchange between various healthcare systems, allowing different stakeholders to access and share healthcare information effectively.
+ 2. Standardization: FHIR provides a standardized format for representing healthcare data, ensuring consistency and compatability across different systems.
+ 3. Flexibility: FHIR allows for incremental adoption, meaning that healthcare organizations can start small and gradually expand their implementations without disrupting existing systems.
+ 4. Easy Implementation: FHIR utilizes modern web technologies and follows a simplified approach, making it easier to develop and implement FHIR-based applications and such.
