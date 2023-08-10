@@ -20,17 +20,23 @@ def main(params):
     diag_location = params['diag_location']
     day_of_symptom = params['day_of_symptom']
     is_symptomatic = params['is_symptomatic']
+    qual_of_life_afib = params['qual_of_life_afib']
     qual_of_life = params['qual_of_life']
     palpitation = params['palpitation']
     dizziness_level = params['dizziness_level']
     shortness_breathe_level = params['shortness_breathe_level']
     fatigue_level = params['fatigue_level']
     other_symptoms = params['other_symptoms']
+    other_symptoms_date = params['other_symptoms_date']
     ekg_capture = params['ekg_capture']
     ekg_date = params['ekg_date']
     ambulatory_monitor_capture = params['ambulatory_monitor_capture']
     wearable_smart_device = params['wearable_smart_device']
     cardioversion = params['cardioversion']
+    cardioversion_number = params['cardioversion_number']
+    cardioversion_last_date = params['cardioversion_last_date']
+    cardioversion_success = params['cardioversion_success']
+    cardioversion_success_length = params['cardioversion_sucess_length']
     on_medication = params['on_medication']
     is_medication_effective = params['is_medication_effective']
     is_resting_heart_high = params['is_resting_heart_high']
@@ -66,12 +72,14 @@ def main(params):
 
     query2 = """INSERT INTO "ZCX28491"."PATIENT_HISTORY" (UUID, NAME, AGE, GENDER, DAY_AF_DIAG, AF_DIAG_LOCATION, DAY_SYMPTOM, SYMPTOMATIC, QUAL_OF_LIFE, PALPITATION, DIZZINESS, SHORTNESS_BREATHE, FATIGUE, OTHER_SYMPTOMS, EKG_CAPTURE,
     AMBULATORY_MONITOR_CAP, WEARABLE_SMART_DEV, CARDIOVERSION, MEDICATION, MEDICATION_EFFECTIVE, RESTING_HEART_HIGH, HIGH_HEART_ACTIVITIES, AF_TYPE, PAROXYSMAL, HEART_ATTACK, ANGINA, CABG, PCI, PACEMAKER, ICD, IMPLANT_MONITOR, DEVICE_AGE,
-    VALVE_DISEASE, VALVE_NAME_1, NARROW_OR_LEAK, VALVE_SURGERY, VALVE_NAME_2, REPAIR_REPLACEMENT, CHF, HYPERTENSION, DIABETES, STROKE, THROMBOEMBOLISM, PERIPHERAL_VASCULAR, HEIGHT, WEIGHT, ETOH, TOB, SLEEP_APNEA, SLEEP_APNEA_TREATMENT, EKG_DATE)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+    VALVE_DISEASE, VALVE_NAME_1, NARROW_OR_LEAK, VALVE_SURGERY, VALVE_NAME_2, REPAIR_REPLACEMENT, CHF, HYPERTENSION, DIABETES, STROKE, THROMBOEMBOLISM, PERIPHERAL_VASCULAR, HEIGHT, WEIGHT, ETOH, TOB, SLEEP_APNEA, SLEEP_APNEA_TREATMENT, EKG_DATE, OTHER_SYMPTOMS_DATE, QUAL_OF_LIFE_AFIB,
+    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
     params = (uuid, patient_name, patient_age, patient_gender, day_of_diag, diag_location, day_of_symptom, is_symptomatic, qual_of_life, palpitation, dizziness_level, shortness_breathe_level, fatigue_level, other_symptoms, ekg_capture, ambulatory_monitor_capture,
               wearable_smart_device, cardioversion, on_medication, is_medication_effective, is_resting_heart_high, is_heart_high_activities, AF_type, paroxysmal, had_heart_attack, has_angina, has_cabg, has_pci, has_pacemaker, icd, has_implant_monitor, device_age,
-              valve_disease, valve_name_1, narrow_or_leak, valve_surgery, valve_name_2, repair_replacement, chf, hypyertension, diabetes, stroke, thromboembolism, peripheral_vascular, height, weight, etoh, tob, sleep_apnea, sleep_apnea_treatment, ekg_date)
+              valve_disease, valve_name_1, narrow_or_leak, valve_surgery, valve_name_2, repair_replacement, chf, hypyertension, diabetes, stroke, thromboembolism, peripheral_vascular, height, weight, etoh, tob, sleep_apnea, sleep_apnea_treatment, ekg_date, other_symptoms_date,
+              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length)
 
     ## Database connection string
     db2_connection = dbi.connect(db2_dsn)
@@ -79,6 +87,10 @@ def main(params):
     my_cursor.execute(query2, params)
     ## UNCOMMENT WHEN DONE
     ## status = db2_connection.commit()
+
+    ## Patient pronouns
+    patient_pronoun_upper = "He" if patient_gender == "Male" else "She"
+    patient_pronoun_lower = "he" if patient_gender == "Male" else "she"
 
     ## Patient history introduction
     patient_history_intro = f'{patient_name} is a {patient_age}-year-old {"man" if patient_gender == "male" else "woman" } who was diagnosed with atrial fibrillation {day_of_diag}. This was diagnosed at {diag_location}. He '
@@ -176,6 +188,7 @@ def main(params):
     ## Append the symptom list to the string
     adjective_symptom = f'is {adjective}symptomatic with ' + symptom_list + symptom_denial_list
 
+    ## Need to redo steps to parse out information for EKG history generation
     ## Patient EKG history
     patient_ekg_history = ''
     if ekg_capture == 'no':
@@ -185,10 +198,43 @@ def main(params):
         patient_ekg_history = 'A 12 lead EKG demonstrated atrial fibrillation. The patient does not recall last when the EKG was performed.'
     ## If the patient had an ekg and has a date when it was last performed
     else:
-        patient_ekg_history = f'A 12 lead EKG {ekg_date} demonstrated atrial fibrillation.'
+        patient_ekg_history = f'A 12 lead EKG in {ekg_date} demonstrated atrial fibrillation.'
+
+    ## Patient other symptoms string parsing
+    patient_other_symptoms_history = ''
+    if other_symptoms != 'none':
+        patient_other_symptoms_history += f'In addition {"he" if patient_gender == "male" else "she"} also compalins of {other_symptoms}. In hindsight, he has has symtoms for about {other_symptoms_date}'
+    else:
+        patient_other_symptoms_history += f'{"He" if patient_gender == "Male" else "She"} has no similar symptoms in the past. '
+
+    ## Patient Quality of life string parsing
+    patient_quality_of_life = ''
+    if qual_of_life_afib == 'Yes, I feel worse during AF.':
+        patient_quality_of_life = f'{"He" if patient_gender == "Male" else "She"} thinks that AF negatively affects {"his" if patient_gender == "Male" else "her"} quality of life. '
+    elif qual_of_life_afib == "I'm not sure":
+        patient_quality_of_life = f"{'He' if patient_gender == 'Male' else 'She'}'s not sure that AF affects {'his' if patient_gender == 'Male' else 'her'} quality of life. "
+    elif qual_of_life_afib == "I don't think that AF affects my quality-of-life":
+        patient_quality_of_life = f"{'He' if patient_gender == 'Male' else 'She'} thinks that AF does not affect {'his' if patient_gender == 'Male' else 'her'} quality of life "
+
+    ## Patient quality of life qualifying string
+    qual_of_life_category_lower = qual_of_life.lower()
+    patient_quality_of_life_category = f'During AF, their quality of life is {qual_of_life_category_lower}'
+
+    ## Cardioversion string parsing
+    patient_cardioversion = ''
+    if cardioversion != 'No':
+        patient_cardioversion = f'{patient_pronoun_upper} has undergone {cardioversion_number} times with the last one in {cardioversion_last_date}. '
+    else:
+        patient_cardioversion = f'{"He" if patient_gender == "Male" else "She"} has not required cardioversion. '
+
+    patient_cardioversion_status = ''
+    if cardioversion_success == True:
+        patient_cardioversion_status = f'Cardioversion was successful. '
+    else:
+        patient_cardioversion_status = f'Cardioversion was not successful. {patient_pronoun_upper} stayed in normal rythm for {cardioversion_success_length} after cardioversion. '
 
     ## Patient history
-    patient_history = patient_history_intro + adjective_symptom + patient_ekg_history
+    patient_history = patient_history_intro + adjective_symptom + patient_other_symptoms_history + patient_quality_of_life + patient_quality_of_life_category + patient_ekg_history + patient_cardioversion + cardioversion_success
 
     ## Initialize response object
     response = {}
