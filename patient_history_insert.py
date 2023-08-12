@@ -45,6 +45,17 @@ def main(params):
     is_heart_high_activities = params['is_heart_high_activities']
     AF_type = params['af_type']
     paroxysmal = params['paroxysmal']
+    ## Update
+    af_duration = params['af_duration']
+    ## Update
+    last_af = params['last_af']
+    ## Update
+    af_consistency = params['af_consistency']
+    ## Update
+    af_avg_duration = params['af_avg_duration']
+    ## Update
+    af_start = params['af_start']
+    ## Update
     had_heart_attack = params['had_heart_attack']
     has_angina = params['has_angina']
     has_cabg = params['has_cabg']
@@ -75,13 +86,13 @@ def main(params):
     query2 = """INSERT INTO "ZCX28491"."PATIENT_HISTORY" (UUID, NAME, AGE, GENDER, DAY_AF_DIAG, AF_DIAG_LOCATION, DAY_SYMPTOM, SYMPTOMATIC, QUAL_OF_LIFE, PALPITATION, DIZZINESS, SHORTNESS_BREATHE, FATIGUE, OTHER_SYMPTOMS, EKG_CAPTURE,
     AMBULATORY_MONITOR_CAP, WEARABLE_SMART_DEV, CARDIOVERSION, MEDICATION, MEDICATION_EFFECTIVE, RESTING_HEART_HIGH, HIGH_HEART_ACTIVITIES, AF_TYPE, PAROXYSMAL, HEART_ATTACK, ANGINA, CABG, PCI, PACEMAKER, ICD, IMPLANT_MONITOR, DEVICE_AGE,
     VALVE_DISEASE, VALVE_NAME_1, NARROW_OR_LEAK, VALVE_SURGERY, VALVE_NAME_2, REPAIR_REPLACEMENT, CHF, HYPERTENSION, DIABETES, STROKE, THROMBOEMBOLISM, PERIPHERAL_VASCULAR, HEIGHT, WEIGHT, ETOH, TOB, SLEEP_APNEA, SLEEP_APNEA_TREATMENT, EKG_DATE, OTHER_SYMPTOMS_DATE, QUAL_OF_LIFE_AFIB,
-    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH, MEDICATION_LIST, MEDICATION_REASONING)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH, MEDICATION_LIST, MEDICATION_REASONING, AF_DURATION, LAST_AF, AF_CONSISTENCY, AF_AVG_DURATION, AF_START)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
     params = (uuid, patient_name, patient_age, patient_gender, day_of_diag, diag_location, day_of_symptom, is_symptomatic, qual_of_life, palpitation, dizziness_level, shortness_breathe_level, fatigue_level, other_symptoms, ekg_capture, ambulatory_monitor_capture,
               wearable_smart_device, cardioversion, on_medication, is_medication_effective, is_resting_heart_high, is_heart_high_activities, AF_type, paroxysmal, had_heart_attack, has_angina, has_cabg, has_pci, has_pacemaker, icd, has_implant_monitor, device_age,
               valve_disease, valve_name_1, narrow_or_leak, valve_surgery, valve_name_2, repair_replacement, chf, hypyertension, diabetes, stroke, thromboembolism, peripheral_vascular, height, weight, etoh, tob, sleep_apnea, sleep_apnea_treatment, ekg_date, other_symptoms_date,
-              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length, medication_list, medication_reasoning)
+              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length, medication_list, medication_reasoning, af_duration, last_af, af_consistency, af_avg_duration, af_start)
 
     ## Database connection string
     db2_connection = dbi.connect(db2_dsn)
@@ -224,7 +235,7 @@ def main(params):
 
     ## Cardioversion string parsing
     patient_cardioversion = ''
-    if cardioversion != 'No':
+    if cardioversion != False:
         patient_cardioversion = f'{patient_pronoun_upper} has undergone {cardioversion_number} times with the last one in {cardioversion_last_date}. '
     else:
         patient_cardioversion = f'{"He" if patient_gender == "Male" else "She"} has not required cardioversion. '
@@ -261,8 +272,64 @@ def main(params):
     else:
         patient_active_heartrate += f'{patient_pronoun_upper} thinks that, during activities, his HR was not excessively high. '
 
+    ## Patient AF status
+    patient_AF_status = ''
+    if paroxysmal == 'No':
+        patient_AF_status += f'{patient_pronoun_upper} atrial fibrillation is paroxysmal, occuring once every {af_consistency} months or so, generall lasting about {af_avg_duration}. {patient_pronoun_upper} last epsiode was {last_af}. '
+    elif paroxysmal == 'Yes':
+        patient_AF_status += f'{patient_pronoun_upper} atrial fibrillation is persistent. '
+    else:
+        patient_AF_status += f'{patient_pronoun_upper} is not sure of the consistency of his atrial fibrillation. '
+
+    ## Patient medical history
+    patient_positive_medical_history = ''
+    patient_negative_medical_history = ''
+    positive_symptoms = []
+    negative_symptoms = []
+    symptoms_list = {
+                        'heart attack' : had_heart_attack,
+                        'angina' : has_angina,
+                        'coronary bypass surgery' : has_cabg,
+                        'PCI' : has_pci,
+                        'valve disease' : valve_disease,
+                     }
+
+    for key in symptoms_list:
+        if symptoms_list[key] == True:
+            positive_symptoms.append(key)
+        else:
+            negative_symptoms.append(key)
+
+    pointer = 0
+    while pointer < len(positive_symptoms):
+        if pointer == 0 and pointer == len(positive_symptoms):
+            patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]}. '
+        elif pointer == 0:
+            patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]}, '
+        elif pointer < len(positive_symptoms) - 2:
+            patient_positive_medical_history += f'{positive_symptoms[pointer]}, '
+        elif pointer ==  len(positive_symptoms) - 2:
+            patient_positive_medical_history += f'{positive_symptoms[pointer]}, and '
+        else:
+            patient_positive_medical_history += f'{positive_symptoms[pointer]}. '
+        pointer += 1
+
+    pointer = 0
+    while pointer < len(negative_symptoms):
+        if pointer == 0 and pointer == len(negative_symptoms):
+            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]}. '
+        elif pointer == 0:
+            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]},  '
+        elif pointer < len(negative_symptoms) - 2:
+            patient_negative_medical_history += f'{negative_symptoms[pointer]}, '
+        elif pointer == len(negative_symptoms) - 2:
+            patient_negative_medical_history += f'{negative_symptoms[pointer]}, and '
+        else:
+            patient_negative_medical_history += f'{negative_symptoms[pointer]}. '
+        pointer += 1
+
     ## Patient history
-    patient_history = patient_history_intro + adjective_symptom + patient_other_symptoms_history + patient_quality_of_life + patient_quality_of_life_category + patient_ekg_history + patient_cardioversion + cardioversion_success + patient_cardioversion_status + patient_medication + patient_active_heartrate
+    patient_history = patient_history_intro + adjective_symptom + patient_other_symptoms_history + patient_quality_of_life + patient_quality_of_life_category + patient_ekg_history + patient_cardioversion + patient_cardioversion_status + patient_medication + patient_active_heartrate + patient_AF_status + patient_positive_medical_history + patient_negative_medical_history
 
     ## Initialize response object
     response = {}
