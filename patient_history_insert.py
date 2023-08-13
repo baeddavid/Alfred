@@ -141,6 +141,7 @@ def main(params):
     ## Append 'ly' to the end of the adjective
     if adjective != '':
         adjective += 'ly '
+    adjective = adjective.lower()
 
     ##symptom_list = f'''{"palpitations" if palpitation != "none" else ""} {"," if interjection > 1 else ""} {"and" if interjection == 1 else ""} {"dizziness" if dizziness_level != "none" else ""}
     ##    {"shortness of breathe" if shortness_breathe_level != "none" else ""} {"fatigue" if fatigue_level != "none" else ""}'''
@@ -160,11 +161,11 @@ def main(params):
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
             ## If the symptom value it not none and interjection is one, insert a comma and an 'and' and remove that symptom from the dictionary
             elif symptoms[pointer] != 'None' and interjection == 1:
-                symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]} and '
+                symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, and '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
             ## If the symptom is not none and interjection is 0 we simply insert the symptom into the string and remove that symptom from the dictinary
             elif symptoms[pointer] != 'None':
-                symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}.'
+                symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}. '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
             ## For every iteration through the list, increment the pointer by one and decrement the interjection by one
             interjection -= 1
@@ -215,30 +216,30 @@ def main(params):
 
     ## Patient other symptoms string parsing
     patient_other_symptoms_history = ''
-    if other_symptoms != 'none':
-        patient_other_symptoms_history += f'In addition {"he" if patient_gender == "male" else "she"} also compalins of {other_symptoms}. In hindsight, he has has symtoms for about {other_symptoms_date}'
+    if other_symptoms != 'None':
+        patient_other_symptoms_history += f'In addition {patient_pronoun_lower} also complains of {other_symptoms}. In hindsight, he has had symtoms for about {other_symptoms_date}'
     else:
-        patient_other_symptoms_history += f'{"He" if patient_gender == "Male" else "She"} has no similar symptoms in the past. '
+        patient_other_symptoms_history += f'{patient_pronoun_upper} has no similar symptoms in the past. '
 
     ## Patient Quality of life string parsing
     patient_quality_of_life = ''
     if qual_of_life_afib == 'Yes, I feel worse during AF.':
-        patient_quality_of_life = f'{"He" if patient_gender == "Male" else "She"} thinks that AF negatively affects {"his" if patient_gender == "Male" else "her"} quality of life. '
+        patient_quality_of_life = f'{patient_pronoun_upper} thinks that AF negatively affects {"his" if patient_gender == "Male" else "her"} quality of life. '
     elif qual_of_life_afib == "I'm not sure":
-        patient_quality_of_life = f"{'He' if patient_gender == 'Male' else 'She'}'s not sure that AF affects {'his' if patient_gender == 'Male' else 'her'} quality of life. "
+        patient_quality_of_life = f"{patient_pronoun_upper}'s not sure that AF affects {'his' if patient_gender == 'Male' else 'her'} quality of life. "
     elif qual_of_life_afib == "I don't think that AF affects my quality-of-life":
-        patient_quality_of_life = f"{'He' if patient_gender == 'Male' else 'She'} thinks that AF does not affect {'his' if patient_gender == 'Male' else 'her'} quality of life "
+        patient_quality_of_life = f"{patient_pronoun_upper} thinks that AF does not affect {'his' if patient_gender == 'Male' else 'her'} quality of life "
 
     ## Patient quality of life qualifying string
     qual_of_life_category_lower = qual_of_life.lower()
-    patient_quality_of_life_category = f'During AF, their quality of life is {qual_of_life_category_lower}'
+    patient_quality_of_life_category = f'During AF, their quality of life is {qual_of_life_category_lower}. '
 
     ## Cardioversion string parsing
     patient_cardioversion = ''
     if cardioversion != False:
-        patient_cardioversion = f'{patient_pronoun_upper} has undergone {cardioversion_number} times with the last one in {cardioversion_last_date}. '
+        patient_cardioversion = f'{patient_pronoun_upper} has undergone cardioversion {cardioversion_number} times with the last one in {cardioversion_last_date}. '
     else:
-        patient_cardioversion = f'{"He" if patient_gender == "Male" else "She"} has not required cardioversion. '
+        patient_cardioversion = f'{patient_pronoun_upper} has not required cardioversion. '
 
     patient_cardioversion_status = ''
     if cardioversion_success == True:
@@ -250,13 +251,13 @@ def main(params):
     patient_medication = ''
     if on_medication == True:
         patient_medication += f'{patient_pronoun_upper} was perscribed: {medication_list}. '
+        if is_medication_effective == True:
+            patient_medication += f'{patient_pronoun_upper} thinks that the medication is working because "{medication_reasoning}". '
+        else:
+            patient_medication += f'{patient_pronoun_upper} thinks that the medication is not working because "{medication_reasoning}". '
     else:
         patient_medication += f'{patient_pronoun_upper} was not perscribed new medications. '
 
-    if is_medication_effective == True:
-        patient_medication += f'{patient_pronoun_upper} thinks that the medication is working because "{medication_reasoning}". '
-    else:
-        patient_medication += f'{patient_pronoun_upper} thinks that the medication is not working because "{medication_reasoning}". '
 
     ## Resting heartbeat string parsing
     patient_heartrate = ''
@@ -287,7 +288,7 @@ def main(params):
     positive_symptoms = []
     negative_symptoms = []
     symptoms_list = {
-                        'heart attack' : had_heart_attack,
+                        'myocardial infarction' : had_heart_attack,
                         'angina' : has_angina,
                         'coronary bypass surgery' : has_cabg,
                         'PCI' : has_pci,
@@ -304,6 +305,8 @@ def main(params):
     while pointer < len(positive_symptoms):
         if pointer == 0 and pointer == len(positive_symptoms):
             patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]}. '
+        elif pointer == 0 and len(positive_symptoms) == 2:
+            patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]} and '
         elif pointer == 0:
             patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]}, '
         elif pointer < len(positive_symptoms) - 2:
@@ -318,8 +321,10 @@ def main(params):
     while pointer < len(negative_symptoms):
         if pointer == 0 and pointer == len(negative_symptoms):
             patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]}. '
+        elif pointer == 0 and len(negative_symptoms) == 2:
+            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]} and '
         elif pointer == 0:
-            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]},  '
+            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]}, '
         elif pointer < len(negative_symptoms) - 2:
             patient_negative_medical_history += f'{negative_symptoms[pointer]}, '
         elif pointer == len(negative_symptoms) - 2:
