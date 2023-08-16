@@ -2,6 +2,7 @@ import sys
 import json
 import os, ibm_db, ibm_db_dbi as dbi, pandas as pd
 import requests
+import math
 
 def main(params):
     ## Database credentials
@@ -70,6 +71,10 @@ def main(params):
     valve_surgery = params['valve_surgery']
     valve_name_2 = params['valve_name_2']
     repair_replacement = params['repair_replacement']
+    ## Update
+    valve_medication = params['valve_medication']
+    ## Update
+    valve_medication_name = params['valve_medication_name']
     chf = params['chf']
     hypyertension = params['hypertension']
     diabetes = params['diabetes']
@@ -79,6 +84,8 @@ def main(params):
     height = params['height']
     weight = params['weight']
     etoh = params['etoh']
+    ## Update
+    etoh_type = params['etoh_type']
     tob = params['tob']
     sleep_apnea = params['sleep_apnea']
     sleep_apnea_treatment = params['sleep_apnea_treatment']
@@ -86,13 +93,13 @@ def main(params):
     query2 = """INSERT INTO "ZCX28491"."PATIENT_HISTORY" (UUID, NAME, AGE, GENDER, DAY_AF_DIAG, AF_DIAG_LOCATION, DAY_SYMPTOM, SYMPTOMATIC, QUAL_OF_LIFE, PALPITATION, DIZZINESS, SHORTNESS_BREATHE, FATIGUE, OTHER_SYMPTOMS, EKG_CAPTURE,
     AMBULATORY_MONITOR_CAP, WEARABLE_SMART_DEV, CARDIOVERSION, MEDICATION, MEDICATION_EFFECTIVE, RESTING_HEART_HIGH, HIGH_HEART_ACTIVITIES, AF_TYPE, PAROXYSMAL, HEART_ATTACK, ANGINA, CABG, PCI, PACEMAKER, ICD, IMPLANT_MONITOR, DEVICE_AGE,
     VALVE_DISEASE, VALVE_NAME_1, NARROW_OR_LEAK, VALVE_SURGERY, VALVE_NAME_2, REPAIR_REPLACEMENT, CHF, HYPERTENSION, DIABETES, STROKE, THROMBOEMBOLISM, PERIPHERAL_VASCULAR, HEIGHT, WEIGHT, ETOH, TOB, SLEEP_APNEA, SLEEP_APNEA_TREATMENT, EKG_DATE, OTHER_SYMPTOMS_DATE, QUAL_OF_LIFE_AFIB,
-    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH, MEDICATION_LIST, MEDICATION_REASONING, AF_DURATION, LAST_AF, AF_CONSISTENCY, AF_AVG_DURATION, AF_START)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH, MEDICATION_LIST, MEDICATION_REASONING, AF_DURATION, LAST_AF, AF_CONSISTENCY, AF_AVG_DURATION, AF_START, VALVE_MEDICATION, VALVE_MEDICATION_NAME, ETOH_TYPE)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
     params = (uuid, patient_name, patient_age, patient_gender, day_of_diag, diag_location, day_of_symptom, is_symptomatic, qual_of_life, palpitation, dizziness_level, shortness_breathe_level, fatigue_level, other_symptoms, ekg_capture, ambulatory_monitor_capture,
               wearable_smart_device, cardioversion, on_medication, is_medication_effective, is_resting_heart_high, is_heart_high_activities, AF_type, paroxysmal, had_heart_attack, has_angina, has_cabg, has_pci, has_pacemaker, icd, has_implant_monitor, device_age,
               valve_disease, valve_name_1, narrow_or_leak, valve_surgery, valve_name_2, repair_replacement, chf, hypyertension, diabetes, stroke, thromboembolism, peripheral_vascular, height, weight, etoh, tob, sleep_apnea, sleep_apnea_treatment, ekg_date, other_symptoms_date,
-              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length, medication_list, medication_reasoning, af_duration, last_af, af_consistency, af_avg_duration, af_start)
+              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length, medication_list, medication_reasoning, af_duration, last_af, af_consistency, af_avg_duration, af_start, valve_medication, valve_medication_name, etoh_type)
 
     ## Database connection string
     db2_connection = dbi.connect(db2_dsn)
@@ -104,9 +111,11 @@ def main(params):
     ## Patient pronouns
     patient_pronoun_upper = "He" if patient_gender == "Male" else "She"
     patient_pronoun_lower = "he" if patient_gender == "Male" else "she"
+    patient_pronoun_upper_possessive = "His" if patient_gender == "Male" else "Her"
+    patient_pronoun_lower_possessive = "his" if patient_gender == "Male" else "her"
 
     ## Patient history introduction
-    patient_history_intro = f'{patient_name} is a {patient_age}-year-old {"man" if patient_gender == "male" else "woman" } who was diagnosed with atrial fibrillation {day_of_diag}. This was diagnosed at {diag_location}. He '
+    patient_history_intro = f'{patient_name} is a {patient_age}-year-old {"man" if patient_gender == "Male" else "woman" } who was diagnosed with atrial fibrillation {day_of_diag}. This was diagnosed at {diag_location}. He '
 
     ## Patient symptoms qualification
     adjective_symptom = ''
@@ -161,7 +170,7 @@ def main(params):
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
             ## If the symptom value it not none and interjection is one, insert a comma and an 'and' and remove that symptom from the dictionary
             elif symptoms[pointer] != 'None' and interjection == 1:
-                symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, and '
+                symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]} and '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
             ## If the symptom is not none and interjection is 0 we simply insert the symptom into the string and remove that symptom from the dictinary
             elif symptoms[pointer] != 'None':
@@ -176,6 +185,8 @@ def main(params):
     symptom_names = {'palpitation' : palpitation, 'dizziness': dizziness_level, 'shortness of breathe': shortness_breathe_level, 'fatigue': fatigue_level}
     symptom_denial_list = ''
 
+    ## Interjection negative bug test
+    debug = interjection_negative
     ## Loop until we have used all negative interjections
     while interjection_negative >= 0:
         ## Iterate through the array of symptoms once
@@ -184,19 +195,21 @@ def main(params):
             if pointer == 0:
                 symptom_denial_list = f'{patient_name} denies any symptoms of '
             ## If the symptom value is not none and negative interjection is greater than one, insert a comma and remove that symptom from dictionary
-            elif symptoms[pointer] == 'None' and interjection_negative > 1:
+            if symptoms[pointer] == 'None' and interjection_negative > 1:
                 symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+                interjection_negative -= 1
             ## If the symptom is not none and interjection is 1 we simply insert the symptom into the string and remove that symptom from the dictionary
             elif symptoms[pointer] == 'None' and interjection_negative == 1:
-                symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, and'
+                symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]} and '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+                interjection_negative -= 1
             ## If the symptom is not none and interjection is 0 we simply insert the symptom into the string and remove that symptom from the dictionary
             elif symptoms[pointer] == 'None':
                 symptom_denial_list = symptom_denial_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}. '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+                interjection_negative -= 1
             ## For every iteration through the list, increment the pointer by one and decrement the interjection by one.
-            interjection_negative -= 1
             pointer += 1
 
     ## Append the symptom list to the string
@@ -206,29 +219,29 @@ def main(params):
     ## Patient EKG history
     patient_ekg_history = ''
     if ekg_capture == 'no':
-        patient_ekg_history = 'The patient did not have an EKG done.'
+        patient_ekg_history = 'The patient did not have an EKG done. '
     ## If the patient had an ekg done but does not remember when it was done
     elif ekg_capture == 'yes' and ekg_date == 'no':
-        patient_ekg_history = 'A 12 lead EKG demonstrated atrial fibrillation. The patient does not recall last when the EKG was performed.'
+        patient_ekg_history = 'A 12 lead EKG demonstrated atrial fibrillation. The patient does not recall last when the EKG was performed. '
     ## If the patient had an ekg and has a date when it was last performed
     else:
-        patient_ekg_history = f'A 12 lead EKG in {ekg_date} demonstrated atrial fibrillation.'
+        patient_ekg_history = f'A 12 lead EKG in {ekg_date} demonstrated atrial fibrillation. '
 
     ## Patient other symptoms string parsing
     patient_other_symptoms_history = ''
     if other_symptoms != 'None':
-        patient_other_symptoms_history += f'In addition {patient_pronoun_lower} also complains of {other_symptoms}. In hindsight, he has had symtoms for about {other_symptoms_date}'
+        patient_other_symptoms_history += f'In addition {"he" if patient_gender == "male" else "she"} also complains of {other_symptoms}. In hindsight, he has had symtoms for about {other_symptoms_date}'
     else:
-        patient_other_symptoms_history += f'{patient_pronoun_upper} has no similar symptoms in the past. '
+        patient_other_symptoms_history += f'{"He" if patient_gender == "Male" else "She"} has no similar symptoms in the past. '
 
     ## Patient Quality of life string parsing
     patient_quality_of_life = ''
     if qual_of_life_afib == 'Yes, I feel worse during AF.':
-        patient_quality_of_life = f'{patient_pronoun_upper} thinks that AF negatively affects {"his" if patient_gender == "Male" else "her"} quality of life. '
+        patient_quality_of_life = f'{"He" if patient_gender == "Male" else "She"} thinks that AF negatively affects {"his" if patient_gender == "Male" else "her"} quality of life. '
     elif qual_of_life_afib == "I'm not sure":
-        patient_quality_of_life = f"{patient_pronoun_upper}'s not sure that AF affects {'his' if patient_gender == 'Male' else 'her'} quality of life. "
+        patient_quality_of_life = f"{'He' if patient_gender == 'Male' else 'She'}'s not sure that AF affects {'his' if patient_gender == 'Male' else 'her'} quality of life. "
     elif qual_of_life_afib == "I don't think that AF affects my quality-of-life":
-        patient_quality_of_life = f"{patient_pronoun_upper} thinks that AF does not affect {'his' if patient_gender == 'Male' else 'her'} quality of life "
+        patient_quality_of_life = f"{'He' if patient_gender == 'Male' else 'She'} thinks that AF does not affect {'his' if patient_gender == 'Male' else 'her'} quality of life. "
 
     ## Patient quality of life qualifying string
     qual_of_life_category_lower = qual_of_life.lower()
@@ -237,9 +250,9 @@ def main(params):
     ## Cardioversion string parsing
     patient_cardioversion = ''
     if cardioversion != False:
-        patient_cardioversion = f'{patient_pronoun_upper} has undergone cardioversion {cardioversion_number} times with the last one in {cardioversion_last_date}. '
+        patient_cardioversion = f'{patient_pronoun_upper} has undergone {cardioversion_number} times with the last one in {cardioversion_last_date}. '
     else:
-        patient_cardioversion = f'{patient_pronoun_upper} has not required cardioversion. '
+        patient_cardioversion = f'{"He" if patient_gender == "Male" else "She"} has not required cardioversion. '
 
     patient_cardioversion_status = ''
     if cardioversion_success == True:
@@ -251,13 +264,13 @@ def main(params):
     patient_medication = ''
     if on_medication == True:
         patient_medication += f'{patient_pronoun_upper} was perscribed: {medication_list}. '
-        if is_medication_effective == True:
-            patient_medication += f'{patient_pronoun_upper} thinks that the medication is working because "{medication_reasoning}". '
-        else:
-            patient_medication += f'{patient_pronoun_upper} thinks that the medication is not working because "{medication_reasoning}". '
     else:
         patient_medication += f'{patient_pronoun_upper} was not perscribed new medications. '
 
+    if is_medication_effective == True:
+        patient_medication += f'{patient_pronoun_upper} thinks that the medication is working because "{medication_reasoning}". '
+    else:
+        patient_medication += f'{patient_pronoun_upper} thinks that the medication is not working because "{medication_reasoning}". '
 
     ## Resting heartbeat string parsing
     patient_heartrate = ''
@@ -288,7 +301,7 @@ def main(params):
     positive_symptoms = []
     negative_symptoms = []
     symptoms_list = {
-                        'myocardial infarction' : had_heart_attack,
+                        'heart attack' : had_heart_attack,
                         'angina' : has_angina,
                         'coronary bypass surgery' : has_cabg,
                         'PCI' : has_pci,
@@ -305,8 +318,6 @@ def main(params):
     while pointer < len(positive_symptoms):
         if pointer == 0 and pointer == len(positive_symptoms):
             patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]}. '
-        elif pointer == 0 and len(positive_symptoms) == 2:
-            patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]} and '
         elif pointer == 0:
             patient_positive_medical_history += f'{patient_pronoun_upper} has a history of {positive_symptoms[pointer]}, '
         elif pointer < len(positive_symptoms) - 2:
@@ -317,14 +328,38 @@ def main(params):
             patient_positive_medical_history += f'{positive_symptoms[pointer]}. '
         pointer += 1
 
+    repair_replacement_string = repair_replacement.lower()
+
+    valve_disease_history = ''
+    if valve_disease == True:
+        if valve_name_1 == 'More than 1 valve':
+             valve_disease_history += f'Valve disease involving {valve_name_1}'
+        else:
+            valve_disease_history += f'Valve disease involving the {valve_name_1}'
+
+    if repair_replacement != '':
+        if repair_replacement != 'Not sure':
+            valve_disease_history += f'{patient_pronoun_upper} underwent {repair_replacement_string} of {valve_name_2}. '
+        else:
+            valve_disease_history += f'{patient_pronoun_upper} underwent {repair_replacement_string} but is not sure which valve it was. '
+
+    if repair_replacement != '':
+        if valve_medication ==  True:
+            valve_disease_history += f'{patient_pronoun_upper} takes {valve_medication_name} for {patient_pronoun_lower_possessive} valve. '
+        else:
+            valve_disease_history += f'{patient_pronoun_upper} does not take blood thinners for {patient_pronoun_lower_possessive} valve. '
+
+    if chf == True:
+        valve_disease_history += f'{patient_pronoun_upper} has had CHF previously. '
+    else:
+        valve_disease_history += f'{patient_pronoun_upper} denies any history of CHF. '
+
     pointer = 0
     while pointer < len(negative_symptoms):
         if pointer == 0 and pointer == len(negative_symptoms):
             patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]}. '
-        elif pointer == 0 and len(negative_symptoms) == 2:
-            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]} and '
         elif pointer == 0:
-            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]}, '
+            patient_negative_medical_history += f'{patient_pronoun_upper} denies any symptoms of {negative_symptoms[pointer]},  '
         elif pointer < len(negative_symptoms) - 2:
             patient_negative_medical_history += f'{negative_symptoms[pointer]}, '
         elif pointer == len(negative_symptoms) - 2:
@@ -333,9 +368,64 @@ def main(params):
             patient_negative_medical_history += f'{negative_symptoms[pointer]}. '
         pointer += 1
 
-    ## Patient history
-    patient_history = patient_history_intro + adjective_symptom + patient_other_symptoms_history + patient_quality_of_life + patient_quality_of_life_category + patient_ekg_history + patient_cardioversion + patient_cardioversion_status + patient_medication + patient_active_heartrate + patient_AF_status + patient_positive_medical_history + patient_negative_medical_history
+    ## Risk factors for stroke
+    stroke_risk_factors = ''
+    over_65 = True if patient_age > 65 else False
+    stroke_factors = {
+        'hypertension': hypyertension,
+        'age': over_65,
+        'gender': patient_gender,
+        'diabetes': diabetes,
+        'thromboembolism': thromboembolism,
+        'vascular disease': peripheral_vascular
+    }
 
+    stroke_positive_factors = []
+    for key in stroke_factors:
+        if stroke_factors[key] == True:
+            stroke_positive_factors.append(key)
+
+    pointer = 0
+    while pointer < len(stroke_positive_factors):
+        if pointer == 0 and pointer == len(stroke_positive_factors):
+            stroke_risk_factors += f'{patient_pronoun_upper_possessive} risk factors for stroke include: {stroke_positive_factors[pointer]}. '
+        elif pointer == 0 and len(stroke_positive_factors) == 2:
+            stroke_risk_factors += f'{patient_pronoun_upper_possessive} risk factors for stroke include {stroke_positive_factors[pointer]} and '
+        elif pointer == 0:
+            stroke_risk_factors += f'{patient_pronoun_upper_possessive} risk factors for stroke include {stroke_positive_factors[pointer]}, '
+        elif pointer < len(stroke_positive_factors) - 2:
+            stroke_risk_factors += f'{stroke_positive_factors[pointer]}, '
+        elif pointer == len(stroke_positive_factors) - 2:
+            stroke_risk_factors += f'{stroke_positive_factors[pointer]} and '
+        else:
+            stroke_risk_factors += f'{stroke_positive_factors[pointer]}. '
+        pointer += 1
+
+    bmi = math.trunc((weight / (height ** 2)) * 703)
+    patient_lifestyle =  f'In terms of lifestyle, {patient_pronoun_lower_possessive} BMI is {bmi}. '
+
+    ## If the patient smokes
+    if tob != 0:
+        patient_lifestyle += f'{patient_pronoun_upper} smokes {tob} packs per day. '
+    else:
+        patient_lifestyle += f'{patient_pronoun_upper} does not smoke. '
+
+    ## If the patient drinks
+    if etoh != 0:
+        patient_lifestyle += f'{patient_pronoun_upper} has {etoh} drinks per day. {patient_pronoun_upper} primarily drinks {etoh_type}. '
+    else:
+        patient_lifestyle += f'{patient_pronoun_upper} does not drink. '
+
+    if sleep_apnea == True:
+        if sleep_apnea_treatment == True:
+            patient_lifestyle += f'{patient_pronoun_upper} has sleep apnea and uses CPAP. '
+        else:
+            patient_lifestyle += f'{patient_pronoun_upper} has sleep apnea and does not use CPAP. '
+    else:
+        patient_lifestyle += f'{patient_pronoun_upper} does not have sleep apnea. '
+    ## Patient history
+    ## patient_history = str(debug)
+    patient_history = patient_history_intro + adjective_symptom + patient_other_symptoms_history + patient_quality_of_life + patient_quality_of_life_category + patient_ekg_history + patient_cardioversion + patient_cardioversion_status + patient_medication + patient_active_heartrate + patient_AF_status + '\n' + patient_positive_medical_history + patient_negative_medical_history + valve_disease_history + '\n' + stroke_risk_factors + '\n' + patient_lifestyle
     ## Initialize response object
     response = {}
 
