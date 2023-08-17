@@ -29,10 +29,22 @@ def main(params):
     fatigue_level = params['fatigue_level']
     other_symptoms = params['other_symptoms']
     other_symptoms_date = params['other_symptoms_date']
-    ekg_capture = params['ekg_capture']
+    ## Update
+    ekg = params['ekg']
+    ## Update
     ekg_date = params['ekg_date']
+    ## Update
+    ekg_location = params['ekg_location']
     ambulatory_monitor_capture = params['ambulatory_monitor_capture']
-    wearable_smart_device = params['wearable_smart_device']
+    ## Update
+    ambulatory_monitor_name = params['ambulatory_monitor_name']
+    ## Update
+    ambulatory_monitor_duration = params['ambulatory_monitor_duration']
+    ## Update
+    ambulatory_monitor_return_date = params['ambulatory_monitor_return_date']
+    smart_device = params['smart_device']
+    ## Update
+    smart_device_name = params['smart_device_name']
     cardioversion = params['cardioversion']
     cardioversion_number = params['cardioversion_number']
     cardioversion_last_date = params['cardioversion_last_date']
@@ -90,16 +102,18 @@ def main(params):
     sleep_apnea = params['sleep_apnea']
     sleep_apnea_treatment = params['sleep_apnea_treatment']
 
-    query2 = """INSERT INTO "ZCX28491"."PATIENT_HISTORY" (UUID, NAME, AGE, GENDER, DAY_AF_DIAG, AF_DIAG_LOCATION, DAY_SYMPTOM, SYMPTOMATIC, QUAL_OF_LIFE, PALPITATION, DIZZINESS, SHORTNESS_BREATHE, FATIGUE, OTHER_SYMPTOMS, EKG_CAPTURE,
-    AMBULATORY_MONITOR_CAP, WEARABLE_SMART_DEV, CARDIOVERSION, MEDICATION, MEDICATION_EFFECTIVE, RESTING_HEART_HIGH, HIGH_HEART_ACTIVITIES, AF_TYPE, PAROXYSMAL, HEART_ATTACK, ANGINA, CABG, PCI, PACEMAKER, ICD, IMPLANT_MONITOR, DEVICE_AGE,
+    query2 = """INSERT INTO "ZCX28491"."PATIENT_HISTORY" (UUID, NAME, AGE, GENDER, DAY_AF_DIAG, AF_DIAG_LOCATION, DAY_SYMPTOM, SYMPTOMATIC, QUAL_OF_LIFE, PALPITATION, DIZZINESS, SHORTNESS_BREATHE, FATIGUE, OTHER_SYMPTOMS, EKG,
+    AMBULATORY_MONITOR_CAP, SMART_DEVICE, CARDIOVERSION, MEDICATION, MEDICATION_EFFECTIVE, RESTING_HEART_HIGH, HIGH_HEART_ACTIVITIES, AF_TYPE, PAROXYSMAL, HEART_ATTACK, ANGINA, CABG, PCI, PACEMAKER, ICD, IMPLANT_MONITOR, DEVICE_AGE,
     VALVE_DISEASE, VALVE_NAME_1, NARROW_OR_LEAK, VALVE_SURGERY, VALVE_NAME_2, REPAIR_REPLACEMENT, CHF, HYPERTENSION, DIABETES, STROKE, THROMBOEMBOLISM, PERIPHERAL_VASCULAR, HEIGHT, WEIGHT, ETOH, TOB, SLEEP_APNEA, SLEEP_APNEA_TREATMENT, EKG_DATE, OTHER_SYMPTOMS_DATE, QUAL_OF_LIFE_AFIB,
-    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH, MEDICATION_LIST, MEDICATION_REASONING, AF_DURATION, LAST_AF, AF_CONSISTENCY, AF_AVG_DURATION, AF_START, VALVE_MEDICATION, VALVE_MEDICATION_NAME, ETOH_TYPE)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+    CARDIOVERSION_NUMBER, CARDIOVERSION_LAST_DATE, CARDIOVERSION_SUCCESS, CARDIOVERSION_SUCCESS_LENGTH, MEDICATION_LIST, MEDICATION_REASONING, AF_DURATION, LAST_AF, AF_CONSISTENCY, AF_AVG_DURATION, AF_START, VALVE_MEDICATION, VALVE_MEDICATION_NAME, ETOH_TYPE, EKG_LOCATION,
+    AMBULATORY_MONITOR_NAME, AMBULATORY_MONITOR_DURATION, AMBULATORY_MONITOR_RETURN_DATE, SMART_DEVICE_NAME)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
-    params = (uuid, patient_name, patient_age, patient_gender, day_of_diag, diag_location, day_of_symptom, is_symptomatic, qual_of_life, palpitation, dizziness_level, shortness_breathe_level, fatigue_level, other_symptoms, ekg_capture, ambulatory_monitor_capture,
-              wearable_smart_device, cardioversion, on_medication, is_medication_effective, is_resting_heart_high, is_heart_high_activities, AF_type, paroxysmal, had_heart_attack, has_angina, has_cabg, has_pci, has_pacemaker, icd, has_implant_monitor, device_age,
+    params = (uuid, patient_name, patient_age, patient_gender, day_of_diag, diag_location, day_of_symptom, is_symptomatic, qual_of_life, palpitation, dizziness_level, shortness_breathe_level, fatigue_level, other_symptoms, ekg, ambulatory_monitor_capture,
+              smart_device, cardioversion, on_medication, is_medication_effective, is_resting_heart_high, is_heart_high_activities, AF_type, paroxysmal, had_heart_attack, has_angina, has_cabg, has_pci, has_pacemaker, icd, has_implant_monitor, device_age,
               valve_disease, valve_name_1, narrow_or_leak, valve_surgery, valve_name_2, repair_replacement, chf, hypyertension, diabetes, stroke, thromboembolism, peripheral_vascular, height, weight, etoh, tob, sleep_apnea, sleep_apnea_treatment, ekg_date, other_symptoms_date,
-              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length, medication_list, medication_reasoning, af_duration, last_af, af_consistency, af_avg_duration, af_start, valve_medication, valve_medication_name, etoh_type)
+              qual_of_life_afib, cardioversion_number, cardioversion_last_date, cardioversion_success, cardioversion_success_length, medication_list, medication_reasoning, af_duration, last_af, af_consistency, af_avg_duration, af_start, valve_medication, valve_medication_name, etoh_type, ekg_location,
+              ambulatory_monitor_duration, ambulatory_monitor_name, ambulatory_monitor_return_date, smart_device_name)
 
     ## Database connection string
     db2_connection = dbi.connect(db2_dsn)
@@ -218,10 +232,10 @@ def main(params):
     ## Need to redo steps to parse out information for EKG history generation
     ## Patient EKG history
     patient_ekg_history = ''
-    if ekg_capture == 'no':
+    if ekg == False:
         patient_ekg_history = 'The patient did not have an EKG done. '
     ## If the patient had an ekg done but does not remember when it was done
-    elif ekg_capture == 'yes' and ekg_date == 'no':
+    elif ekg == True and (ekg_date == 'No' or ekg_date == 'no'):
         patient_ekg_history = 'A 12 lead EKG demonstrated atrial fibrillation. The patient does not recall last when the EKG was performed. '
     ## If the patient had an ekg and has a date when it was last performed
     else:

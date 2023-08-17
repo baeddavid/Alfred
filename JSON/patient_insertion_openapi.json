@@ -1,0 +1,278 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Swagger Db2 WA Extensions",
+        "description": "This is a Swagger Connecting WA to a Db2 using Cloud Function",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://us-south.functions.appdomain.cloud",
+            "description" : "Dallas, USA"
+        }
+    ],
+    "paths": {
+        "/api/v1/web/e7275f20-e62e-40a3-8492-fb5dc21819eb/default/test.json": {
+            "post": {
+                "parameters": [],
+                "summary": "Insert patient information into db2",
+                "description": "Insert patient information into db2",
+                "operationId": "postPatientData",
+                "requestBody": {
+                    "description": "Payload to insert patient information by means of Cloud Function.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties":{
+                                    "uuid":{
+                                        "type": "string",
+                                        "description": "UUID for patient"
+                                    },
+                                    "patient_name":{
+                                        "type": "string",
+                                        "description" : "Patient preferred name"
+                                    },
+                                    "patient_age":{
+                                        "type" : "integer",
+                                        "description" : "Patient age"
+                                    },
+                                    "patient_gender":{
+                                        "type": "string",
+                                        "description" : "Patient gender"
+                                    },
+                                    "day_of_diag":{
+                                        "type" : "string",
+                                        "description" : "Day of AFIB diagnosis"
+                                    },
+                                    "diag_location":{
+                                        "type" : "string",
+                                        "description" : "Location of AFIB diagnosis"
+                                    },
+                                    "day_of_symptom":{
+                                        "type" : "string",
+                                        "description" : "Day of symptoms"
+                                    },
+                                    "is_symptomatic":{
+                                        "type": "boolean",
+                                        "description" : "Boolean value of whether patient is symptomatic"
+                                    },
+                                    "qual_of_life":{
+                                        "type" : "string",
+                                        "description" : "Categorization of quality of life"
+                                    },
+                                    "palpitation":{
+                                        "type" : "string",
+                                        "description" : "Categorization of palpitations"
+                                    },
+                                    "dizziness_level":{
+                                        "type": "string",
+                                        "description": "Categorization of dizziness level"
+                                    },
+                                    "shortness_breathe_level":{
+                                        "type": "string",
+                                        "description": "Categorizatoin of shortness breathe level"
+                                    },
+                                    "fatigue_level":{
+                                        "type": "string",
+                                        "description": "Categorization of fatigue level"
+                                    },
+                                    "other_symptoms":{
+                                        "type": "string",
+                                        "description": "Other symptoms that the patient may have"
+                                    },
+                                    "ekg_capture":{
+                                        "type": "string",
+                                        "description": "Ekg status and additional explanation"
+                                    },
+                                    "ambulatory_monitor_capture":{
+                                        "type": "string",
+                                        "description": "Ambulator monitor capture status and additional explanation"
+                                    },
+                                    "wearable_smart_device": {
+                                        "type": "string",
+                                        "description": "Patient wearable smart device status and additional explanation"
+                                    },
+                                    "cardioversion":{
+                                        "type": "boolean",
+                                        "description": "Cardioversion status and additional explanation"
+                                    },
+                                    "cardioversion_number":{
+                                        "type": "integer",
+                                        "description": "Number of cardioversions that patient has had done"
+                                    },
+                                    "cardioversion_success":{
+                                        "type": "boolean",
+                                        "description": "Cardioversion success status"
+                                    },
+                                    "cardioversion_success_length":{
+                                        "type": "string",
+                                        "description": "Length of how long cardioversioning lasted"
+                                    },
+                                    "on_medication": {
+                                        "type": "boolean",
+                                        "description": "Patient medication status"
+                                    },
+                                    "is_medication_effective": {
+                                        "type": "boolean",
+                                        "description": "Is the patient meddication effective"
+                                    },
+                                    "is_resting_heart_high": {
+                                        "type": "boolean",
+                                        "description": "Is the patients resting heart rate high"
+                                    },
+                                    "is_heart_high_activities": {
+                                        "type": "boolean",
+                                        "description": "Patient heart rate high during activities"
+                                    },
+                                    "af_type": {
+                                        "type": "string",
+                                        "description": "Patient AFIB type"
+                                    },
+                                    "paroxysmal": {
+                                        "type": "string",
+                                        "description": "Categorization of patient paroxysmal"
+                                    },
+                                    "had_heart_attack": {
+                                        "type": "boolean",
+                                        "description": "Patient heart attack history"
+                                    },
+                                    "has_angina": {
+                                        "type": "boolean",
+                                        "description": "Patient angina history"
+                                    },
+                                    "has_cabg": {
+                                        "type": "boolean",
+                                        "description": "Patient cabg history"
+                                    },
+                                    "has_pci": {
+                                        "type": "boolean",
+                                        "description": "Patient pci history"
+                                    },
+                                    "has_pacemaker": {
+                                        "type": "boolean",
+                                        "description": "Patient pacemaker history"
+                                    },
+                                    "icd": {
+                                        "type": "boolean",
+                                        "description": "Patient icd history"
+                                    },
+                                    "has_implant_monitor": {
+                                        "type": "boolean",
+                                        "description": "Implant monitor status/history"
+                                    },
+                                    "device_age": {
+                                        "type": "integer",
+                                        "description": "Age of device"
+                                    },
+                                    "valve_disease": {
+                                        "type": "boolean",
+                                        "description": "Patient valve disease history"
+                                    },
+                                    "valve_name_1": {
+                                        "type": "string",
+                                        "description": "Name of the diseased valve"
+                                    },
+                                    "narrow_or_leak": {
+                                        "type": "string",
+                                        "description": "Patient valve is narrow or leak"
+                                    },
+                                    "valve_surgery": {
+                                        "type": "boolean",
+                                        "description": "Patient valve surgery history"
+                                    },
+                                    "valve_name_2": {
+                                        "type": "string",
+                                        "description": "Name of valve operated on"
+                                    },
+                                    "repair_replacement": {
+                                        "type": "string",
+                                        "description": "Patient valve was either repaired or replaced"
+                                    },
+                                    "chf": {
+                                        "type": "boolean",
+                                        "description": "Patient history of chf"
+                                    },
+                                    "hypertension": {
+                                        "type": "boolean",
+                                        "description": "Patient hypertension history"
+                                    },
+                                    "diabetes": {
+                                        "type": "boolean",
+                                        "description": "Patient diabetes history"
+                                    },
+                                    "stroke": {
+                                        "type": "boolean",
+                                        "description": "Patient stroke history"
+                                    },
+                                    "thromboembolism": {
+                                        "type": "boolean",
+                                        "description": "Patient thromboembolism history"
+                                    },
+                                    "peripheral_vascular": {
+                                        "type": "boolean",
+                                        "description": "Patient peripheral vascular history"
+                                    },
+                                    "height": {
+                                        "type": "integer",
+                                        "description": "Patient heigh in inches"
+                                    },
+                                    "weight": {
+                                        "type": "integer",
+                                        "description": "Patient weight in pounds"
+                                    },
+                                    "etoh": {
+                                        "type": "string",
+                                        "description": "Patient etoh history"
+                                    },
+                                    "tob": {
+                                        "type": "string",
+                                        "description": "Patient tob history"
+                                    },
+                                    "sleep_apnea": {
+                                        "type": "boolean",
+                                        "description": "Patient sleep apnea history"
+                                    },
+                                    "sleep_apnea_treatment": {
+                                        "type": "boolean",
+                                        "description": "Patient sleep apnea treatment history"
+                                    },
+                                    "ekg_date": {
+                                        "type": "string",
+                                        "description": "Date when patient had an EKG performed"
+                                    },
+                                    "other_symptoms_date": {
+                                        "type": "string",
+                                        "description": "Date when patient first experienced other symptoms"
+                                    }
+
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "history_return":{
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "Invalid input."
+                    }
+                }
+            }
+        }
+    }
+}

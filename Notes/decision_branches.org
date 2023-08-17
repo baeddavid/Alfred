@@ -1,0 +1,19 @@
+#+TITLE: Decision Branches
+* Step #
+** Step 23
+I need to be able to parse out the location and time of the EKG performed. It is free text so it will be a little difficult.
+** Step 25
+I need to be able to parse out the duration, type of device, and the date that the user returned it.
+* Algorithm for symptoms
+We have 5-7 symptoms. Patient can be true or false for each of the symptoms. If the patient tests positive we have to put the variable into a 'positive' string.
+
+If the patient tests negative we have to put the variable into the 'negative' string.
+
+** Knowns/unknowns
+We do not know how many variables will be in each positive/negative string. For all we know the patient can have had all symptoms or none of the symptoms.
+
+What if we sort through variables and put them into separate dictionaries for true/false values { variable : value }
+
+We iterate through the dictionaries for each one and then append all values of each into string.
+
+Do we even need a dictionary? We don't need the value... We can just put them into lists for all symptoms that are true and vice versa and go from there.
