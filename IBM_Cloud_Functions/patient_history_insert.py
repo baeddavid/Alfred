@@ -6,7 +6,7 @@ import math
 
 def main(params):
     ## Database credentials
-    db2_dsn = 'DATABASE={};HOSTNAME=6667d8e9-9d4d-4ccb-ba32-21da3bb5aafc.c1ogj3sd0tgtu0lqde00.databases.appdomain.cloud;PORT=30376;PROTOCOL=TCPIP;UID=zcx28491;PWD=Qson8p4KB19I2ONX;SECURITY=SSL'.format(
+    db2_dsn = ''.format(
         'bludb',
         'XXXXX.databases.appdomain.cloud',
         'XXXXX',
