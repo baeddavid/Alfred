@@ -182,16 +182,18 @@ def main(params):
             if symptoms[pointer] != 'None' and interjection > 1:
                 symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}, '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+                interjection -= 1
             ## If the symptom value it not none and interjection is one, insert a comma and an 'and' and remove that symptom from the dictionary
             elif symptoms[pointer] != 'None' and interjection == 1:
                 symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]} and '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+                interjection -= 1
             ## If the symptom is not none and interjection is 0 we simply insert the symptom into the string and remove that symptom from the dictinary
             elif symptoms[pointer] != 'None':
                 symptom_list = symptom_list + f'{list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])]}. '
                 symptom_names.pop(list(symptom_names.keys())[list(symptom_names.values()).index(symptoms[pointer])])
+                interjection -= 1
             ## For every iteration through the list, increment the pointer by one and decrement the interjection by one
-            interjection -= 1
             pointer += 1
 
     ## Reinitialize the sympmtom names dictionary and pointer
@@ -243,8 +245,8 @@ def main(params):
 
     ## Patient other symptoms string parsing
     patient_other_symptoms_history = ''
-    if other_symptoms != 'None':
-        patient_other_symptoms_history += f'In addition {"he" if patient_gender == "male" else "she"} also complains of {other_symptoms}. In hindsight, he has had symtoms for about {other_symptoms_date}'
+    if other_symptoms != 'none':
+        patient_other_symptoms_history += f'In addition {"he" if patient_gender == "Male" else "she"} also complains of {other_symptoms}. In hindsight, he has had symptoms for about {other_symptoms_date}'
     else:
         patient_other_symptoms_history += f'{"He" if patient_gender == "Male" else "She"} has no similar symptoms in the past. '
 
@@ -259,32 +261,32 @@ def main(params):
 
     ## Patient quality of life qualifying string
     qual_of_life_category_lower = qual_of_life.lower()
-    patient_quality_of_life_category = f'During AF, their quality of life is {qual_of_life_category_lower}. '
+    patient_quality_of_life_category = f'During AF, {patient_pronoun_lower_possessive} quality of life is {qual_of_life_category_lower}. '
 
     ## Cardioversion string parsing
     patient_cardioversion = ''
+    patient_cardioversion_status = ''
     if cardioversion != False:
         patient_cardioversion = f'{patient_pronoun_upper} has undergone {cardioversion_number} times with the last one in {cardioversion_last_date}. '
+        if cardioversion_success == True:
+            patient_cardioversion_status = f'Cardioversion was successful. '
+        else:
+            patient_cardioversion_status = f'Cardioversion was not successful. {patient_pronoun_upper} stayed in normal rhythm for {cardioversion_success_length} after cardioversion. '
     else:
         patient_cardioversion = f'{"He" if patient_gender == "Male" else "She"} has not required cardioversion. '
 
-    patient_cardioversion_status = ''
-    if cardioversion_success == True:
-        patient_cardioversion_status = f'Cardioversion was successful. '
-    else:
-        patient_cardioversion_status = f'Cardioversion was not successful. {patient_pronoun_upper} stayed in normal rythm for {cardioversion_success_length} after cardioversion. '
 
     ## Medication string parsing
     patient_medication = ''
     if on_medication == True:
-        patient_medication += f'{patient_pronoun_upper} was perscribed: {medication_list}. '
+        patient_medication += f'{patient_pronoun_upper} was prescribed: {medication_list}. '
+        if is_medication_effective == True:
+            patient_medication += f'{patient_pronoun_upper} thinks that the medication is working because "{medication_reasoning}". '
+        else:
+            patient_medication += f'{patient_pronoun_upper} thinks that the medication is not working because "{medication_reasoning}". '
     else:
         patient_medication += f'{patient_pronoun_upper} was not perscribed new medications. '
 
-    if is_medication_effective == True:
-        patient_medication += f'{patient_pronoun_upper} thinks that the medication is working because "{medication_reasoning}". '
-    else:
-        patient_medication += f'{patient_pronoun_upper} thinks that the medication is not working because "{medication_reasoning}". '
 
     ## Resting heartbeat string parsing
     patient_heartrate = ''

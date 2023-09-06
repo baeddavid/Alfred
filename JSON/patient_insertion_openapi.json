@@ -81,18 +81,6 @@
                                         "type": "string",
                                         "description": "Other symptoms that the patient may have"
                                     },
-                                    "ekg_capture":{
-                                        "type": "string",
-                                        "description": "Ekg status and additional explanation"
-                                    },
-                                    "ambulatory_monitor_capture":{
-                                        "type": "string",
-                                        "description": "Ambulator monitor capture status and additional explanation"
-                                    },
-                                    "wearable_smart_device": {
-                                        "type": "string",
-                                        "description": "Patient wearable smart device status and additional explanation"
-                                    },
                                     "cardioversion":{
                                         "type": "boolean",
                                         "description": "Cardioversion status and additional explanation"
